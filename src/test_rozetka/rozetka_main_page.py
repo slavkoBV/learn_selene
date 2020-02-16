@@ -2,6 +2,7 @@ import os
 
 from selene.support.shared import browser
 from selene.support.jquery_style_selectors import s
+from selene.support.conditions import have
 
 
 browser.config.browser_name = 'firefox'
@@ -27,7 +28,7 @@ class LoginPage:
     def sign_in(self):
         s("#auth_email").set(email).press_enter()
         s("#auth_pass").set(password).press_enter()
-
+        return self
 
     def load_user_page(self):
         s("//a[contains(@href, 'personal-information')]").click()
