@@ -1,7 +1,7 @@
 import os
 
 from selene.support.shared import browser
-from selene.support.jquery_style_selectors import s
+from selene.support.jquery_style_selectors import s, ss
 from selene.support.conditions import have
 
 
@@ -34,14 +34,22 @@ class LoginPage:
         s("//a[contains(@href, 'personal-information')]").click()
         return UserPage()
 
+    def search(self, query):
+        s(".search-form__input[name=search]").set(query).press_enter()
+        return SearchResult()
+
 
 class UserPage:
-
     def sign_out(self):
         s("#profile_signout").click()
 
 
-def test_rozetka():
+class SearchResult:
+    def __init__(self):
+        self.results = ss(".goods-tile__title")
+
+
+def test_rozetka_sign_in_out():
     rozetka = RozetkaMainPage().load_page()
     sign_page = rozetka.login()
     sign_page.sign_in()
@@ -50,5 +58,17 @@ def test_rozetka():
     user_page.sign_out()
 
 
+def test_rozetka_search():
+    rozetka = RozetkaMainPage().load_page()
+    sign_page = rozetka.login()
+    sign_page.sign_in()
+    search_results = sign_page.search('moto g')
+    for idx in range(5):
+        search_results.results[idx].should(have.text("Moto G"))
+    user_page = sign_page.load_user_page()
+    user_page.sign_out()
+
+
 if __name__ == '__main__':
-    test_rozetka()
+    test_rozetka_sign_in_out()
+    test_rozetka_search()
